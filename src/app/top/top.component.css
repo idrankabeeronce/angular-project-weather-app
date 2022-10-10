@@ -1,0 +1,14 @@
+.header-navigate {
+    width: 100vw;
+    min-height: 30px;
+    height: 10vh;
+    background: rgb(46, 130, 199);
+    display: flex;
+}
+#navigate-block {
+    width: 50%;
+}
+a#navigate-link {
+    font-size: 5vh;
+    cursor: pointer;
+}
