@@ -1,0 +1,145 @@
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    appearance: none;
+    margin: 0;
+}
+::ng-deep .mat-select-panel::-webkit-scrollbar { 
+    display: none; 
+}
+mat-card {
+    background: rgba(189, 189, 253, .5);
+}
+.header-navigate {
+    width: 100vw;
+    min-height: 30px;
+    height: 10vh;
+    background: rgb(46, 130, 199);
+    display: none;
+}
+
+#navigate-block {
+    width: 50%;
+}
+
+a#navigate-link {
+    font-size: 5vh;
+    cursor: pointer;
+}
+
+.weather-panel {
+    margin: 10px 0;    
+    height: auto;
+    position: absolute;
+    left: 10vw;
+    right: 10vw;
+    display: flex;
+}
+
+#container-settings {
+    width: 25%;
+    height: 100%;
+}
+
+#container-charts {
+    margin-left: 10px;
+    width: calc(75% - 10px);
+    height: 100%;
+}
+.charts-card {
+    
+    margin: 0 0 10px 0;
+}
+#charts-card-ad {
+    
+    width: calc(30% - 16px);
+    margin: 0;
+    aspect-ratio: 1/1;
+}
+
+
+#container-ad-charts {
+    display: flex;
+    
+    
+}
+#ad-charts-label {
+    position: absolute;
+    left: 14px;
+    top: 14px;
+    z-index: 14;
+    font-weight: bold;
+}
+#button-change-chart-view {
+    background: transparent;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    box-shadow: none;
+}
+.container-tile {
+    display: flex;
+}
+
+#enabled {
+    display: block;
+    width: 100%;
+}
+
+#disabled {
+    display: none;
+    width: 100%;
+}
+
+#raised-button {
+    margin-right: 0;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+mat-form-field {
+    width: 100%;
+}
+
+@media (max-width: 1200px) {
+    .weather-panel {
+        display: block;
+    }
+
+    #container-settings {
+        width: auto;
+        height: auto;
+    }
+}
+
+@media (max-width: 1200px) {
+    #container-charts {
+        margin: 0;
+        margin-top: 10px;
+        width: 100%;
+    }
+    #enabled {
+        display: flex;
+    }
+
+    #form_queary_params {
+        margin: 10px 0;
+    }
+    #content-box {
+        padding: 0 5px;
+        width: calc(50% - 10px);
+    }
+}
+@media (max-width: 700px) {
+    mat-form-field {
+        padding: 0 5px;
+        width: calc(100% - 10px);
+    }
+    #container-settings {
+        padding: 0;
+    }
+    ::ng-deep .mat-checkbox-layout .mat-checkbox-label {
+        line-height: 12px;
+        white-space: break-spaces;
+    }
+}
