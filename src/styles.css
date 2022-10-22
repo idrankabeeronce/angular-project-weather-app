@@ -4,3 +4,14 @@ body {
 }
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+::-webkit-scrollbar {
+    width: 10px;
+    background: rgb(216, 216, 216);
+}
+::-webkit-scrollbar-thumb {
+    background:rgb(161, 161, 161);
+}
+::-webkit-scrollbar-thumb:hover {
+    background:rgb(80, 80, 80);
+}

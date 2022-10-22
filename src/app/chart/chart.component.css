@@ -6,35 +6,61 @@ input::-webkit-inner-spin-button {
 ::ng-deep .mat-select-panel::-webkit-scrollbar { 
     display: none; 
 }
-mat-card {
-    background: rgba(189, 189, 253, .5);
+.header-panel {
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 400px;
+    background-image: url('https://images.theconversation.com/files/232705/original/file-20180820-30593-1nxanpj.jpg?ixlib=rb-1.1.0&q=45&auto=format&w=4800&h=3600.0');
+   
+   background-size: 150%;
+    transition: 5s;
 }
-.header-navigate {
-    width: 100vw;
-    min-height: 30px;
-    height: 10vh;
-    background: rgb(46, 130, 199);
-    display: none;
+.header-panel.active { 
+    background-size: 100%;
 }
-
-#navigate-block {
-    width: 50%;
+.background-img {
+    width: 100%;
+    height: 100%;
+    z-index: -1;
 }
-
-a#navigate-link {
-    font-size: 5vh;
-    cursor: pointer;
+.header-panel-header {
+    width: 400px;
+    padding: 50px 0;
+    margin: 0 auto;
+    
+    height: 300px;
 }
-
+h1 {
+    color: white;
+    text-shadow: 2px 2px 2px black;
+    font-size: 2em;
+    font-weight:lighter;
+    text-align: center;
+}
+.header-panel-img {
+    
+    filter: drop-shadow(2px 2px 2px black);
+    margin: 0 auto;
+    height: 200px;
+    width: 200px;
+}
+.header-panel-img img {
+    filter: invert(1);
+    height: 200px;
+    width: 200px;
+}
 .weather-panel {
-    margin: 10px 0;    
+    margin: 10px auto;
+    width: 80vw;   
     height: auto;
-    position: absolute;
-    left: 10vw;
-    right: 10vw;
-    display: flex;
+    
 }
-
+.container-panel {
+    
+    display: flex;
+    width: 100%;
+}
 #container-settings {
     width: 25%;
     height: 100%;
@@ -69,14 +95,6 @@ a#navigate-link {
     z-index: 14;
     font-weight: bold;
 }
-#button-change-chart-view {
-    background: transparent;
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    box-shadow: none;
-}
 .container-tile {
     display: flex;
 }
@@ -102,7 +120,7 @@ mat-form-field {
 }
 
 @media (max-width: 1200px) {
-    .weather-panel {
+    .container-panel {
         display: block;
     }
 

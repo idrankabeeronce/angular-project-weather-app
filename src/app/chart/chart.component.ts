@@ -2,11 +2,16 @@ import { Component, OnInit } from '@angular/core';
 import * as Highcharts from 'highcharts';
 declare var require: any;
 require('highcharts/highcharts-more')(Highcharts);
+import { HighchartsChartModule } from 'highcharts-angular';
+import Annotations from 'highcharts/modules/annotations.src';
+require('highcharts/modules/annotations')(Highcharts);
+//  Annotations(this.highcharts);
+
 import { tap } from 'rxjs';
 import { PostService } from '../services/post.service';
 import { Observable, of, pipe } from 'rxjs';
 import { Title } from '@angular/platform-browser';
-import { FormControl } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 
 
@@ -14,13 +19,13 @@ let country_name: string;
 let country_code: string;
 
 
-
 @Component({
   selector: 'app-chart',
   templateUrl: './chart.component.html',
   styleUrls: ['./chart.component.css']
 })
-export class Chart implements OnInit {
+export class Chart implements OnInit, HighchartsChartModule {
+
   cities = [
     {
       "country": "RU",
@@ -67,7 +72,6 @@ export class Chart implements OnInit {
       "name": "Tokyo"
     }
   ];
-
   humidity_chart_gauge: any;
   pressure_chart_gauge: any;
   wind_chart_gauge: any;
@@ -76,15 +80,16 @@ export class Chart implements OnInit {
   pressure_chart_area: any;
   wind_chart_area: any;
   change_wind_check = true;
-  array_of_null: any[] = [];
   highcharts: any;
 
+
+  classApplied = false;
   selectedType_form = new FormControl('spline');
   selectedType: string = 'spline';
   longitude: number = 0;
   latitude: number = 0;
   button_model: any;
-  menu_text: string = 'Query by city';
+  menu_text: string = 'Extended query by parameters';
   selected_temp = new FormControl('C');
   selected_unit_celsius = false;
   countries_list: any[] = [[], []];
@@ -94,7 +99,6 @@ export class Chart implements OnInit {
   humidity_chartOptions_area: any = {
     chart: {
       type: 'area',
-      zoomType: 'x',
       backgroundColor: 'transparent',
       style: {
         fontFamily: 'Roboto, "Helvetica Neue", sans-serif',
@@ -119,7 +123,7 @@ export class Chart implements OnInit {
         text: ""
       },
       labels: {
-        enabled: true
+        enabled: false
       }
     },
     xAxis: {
@@ -130,9 +134,9 @@ export class Chart implements OnInit {
       },
       plotLines: [{
         zIndex: 9,
-        color: '#14143d', // Red
+        color: '#14143d',
         width: 2,
-        value: 0 // Position, you'll have to translate this to the values on your x axis
+        value: 0
       }],
       labels: {
         enabled: false
@@ -183,7 +187,6 @@ export class Chart implements OnInit {
   pressure_chartOptions_area: any = {
     chart: {
       type: 'area',
-      zoomType: 'x',
       backgroundColor: 'transparent',
       style: {
         fontFamily: 'Roboto, "Helvetica Neue", sans-serif',
@@ -208,9 +211,9 @@ export class Chart implements OnInit {
         text: ""
       },
       labels: {
-        enabled: true
+        enabled: false
       },
-      //minRange: 1
+      opposite: true,
     },
     xAxis: {
       type: "datetime",
@@ -221,13 +224,14 @@ export class Chart implements OnInit {
       },
       plotLines: [{
         zIndex: 9,
-        color: '#14143d', // Red
+        color: '#14143d',
         width: 2,
-        value: 0 // Position, you'll have to translate this to the values on your x axis
+        value: 0
       }],
       labels: {
         enabled: false
-      }
+      },
+
     },
     tooltip: {
       valueSuffix: " mm Hg"
@@ -275,7 +279,6 @@ export class Chart implements OnInit {
   wind_chartOptions_area: any = {
     chart: {
       type: 'area',
-      zoomType: 'x',
       backgroundColor: 'transparent',
       style: {
         fontFamily: 'Roboto, "Helvetica Neue", sans-serif',
@@ -300,10 +303,10 @@ export class Chart implements OnInit {
       title: {
         text: ""
       },
-      labels: {
-        enabled: true
-      },
 
+      labels: {
+        enabled: false
+      }
     },
     xAxis: {
       type: "datetime",
@@ -344,46 +347,6 @@ export class Chart implements OnInit {
         },
         pointWidth: 200,
         borderColor: 'transparent',
-        /*
-        zones: [
-          {
-            value: 0,
-            
-            color: {
-              pattern: {
-                image: 'https://www.svgrepo.com/show/175041/arrow.svg',
-                aspectRatio: 1.3
-            }
-          }
-            //https://www.svgrepo.com/show/175041/arrow.svg
-          },
-          {
-            value: 100,
-            color: {
-              pattern: {
-                image: 'https://www.svgrepo.com/show/175041/arrow.svg',
-                aspectRatio: 1.3
-            }
-          }
-          },
-          {
-            value: 200,            
-            color: {
-              pattern: {
-                image: 'https://www.svgrepo.com/show/175041/arrow.svg',
-                aspectRatio: 1.3
-            }
-          }
-          },
-          {
-            
-            color:{
-              pattern: {
-                image: 'https://www.svgrepo.com/show/175041/arrow.svg',
-                aspectRatio: 1.3
-            }
-          }
-          }]*/
       }
     ],
     plotOptions: {
@@ -422,8 +385,6 @@ export class Chart implements OnInit {
     }
   }
 
-  //this.pressure_chartOptions_area.series[0].name ='Pressure';
-  //this.wind_chartOptions_area.series[0].name ='Wind speed';
   chartOptions: any = {
     chart: {
       type: this.selectedType,
@@ -432,11 +393,22 @@ export class Chart implements OnInit {
       style: {
         fontFamily: 'Roboto, "Helvetica Neue", sans-serif',
         fontWeight: 'bold'
-      }
+      },
     },
+    annotations: [{
+      labels: [{
+        point: { x: 0, y: 0 },
+        text: 'Label',
+        backgroundColor: 'greenyellow',
+        style: {
+          color: 'black'
+        }
+      }]
+    }],
     credits: {
       enabled: false
     },
+
     data: {
       dateFormat: 'dd/mm/YYYY'
     },
@@ -451,6 +423,7 @@ export class Chart implements OnInit {
       y: 24
     },
     xAxis: {
+
       lineColor: 'rgba(20,20,20,.5)',
       type: "datetime",
       crosshair: {
@@ -458,6 +431,7 @@ export class Chart implements OnInit {
         width: 2
       },
       plotLines: [{
+
         zIndex: 9,
         color: '#FF0000', // Red
         width: 2,
@@ -493,6 +467,7 @@ export class Chart implements OnInit {
       },
       series: {
 
+        borderColor: 'transparent',
         threshold: 0,
         marker: {
           enabled: false,
@@ -550,6 +525,7 @@ export class Chart implements OnInit {
         fontWeight: 'bold'
       },
 
+
     },
     credits: {
       enabled: false
@@ -564,7 +540,7 @@ export class Chart implements OnInit {
       endAngle: 360,
       background: null,
       center: ['50%', '50%'],
-      size: '100%',
+      size: '80%',
     },
     series: [
       {
@@ -581,12 +557,20 @@ export class Chart implements OnInit {
 
         dial: {
 
+          //radius: '90%',
+          //topWidth: 1,
+          //baseWidth:10,
+          //baseLength: 1,
+          backgroundColor: 'white',
+          borderWidth: 1,
+          borderColor: 'black',
 
           radius: '90%',
           topWidth: 1,
           baseWidth: 30,
           rearLength: -60,
           baseLength: 60
+
         },
 
       },
@@ -618,27 +602,42 @@ export class Chart implements OnInit {
       },
       gauge: {
         pivot: {
-
           radius: 0,
         }
       }
     },
-    yAxis: {
+
+    yAxis: [{
+      offset: -10,
       lineWidth: 0,
       min: 0,
       max: 360,
-      minorTicks: false,
-      tickColor: 'rgba(20,20,20,.3)',
-      tickPixelInterval: 3,
-      tickPosition: 'inside',
-      tickLength: 10,
-      tickWidth: 2,
+      minorTicks: true,
+      tickColor: 'rgba(20,20,20,.5)',
+      tickPixelInterval: 5,
+      tickPositions: [0, 20, 40, 60, 80, 100, 120, 140, 160, 180, 200, 220, 240, 260, 280, 300, 320, 340],
+      tickPosition: 'outside',
+      minorTickPosition: 'outside',
+      minorTickLength: 10,
+      tickLength: 20,
+      tickWidth: 3,
+      rotation: 15,
       labels: {
-        useHTML: true,
         enabled: true,
-        step: 90
-      }
+        distance: 30,
+      },
+
+    },
+    {
+
+      lineWidth: 0,
+      min: 0,
+      max: 4,
+      tickWidth: 0,
+      categories: ['N', 'E', 'S', 'W'],
+      tickPositions: [0, 1, 2, 3],
     }
+    ]
   };
   constructor(public service: PostService, public dialog: MatDialog) {
 
@@ -653,8 +652,14 @@ export class Chart implements OnInit {
   }
 
   ngAfterViewInit() {
+    this.toggleClass();
   }
-
+  toggleClass() {
+    setTimeout(()=> {
+      console.log('aplied');
+    this.classApplied = !this.classApplied }, 3000)
+    
+  }
   getUpToData(code: string, country: string, t_unit: boolean) {
     let latitude: number;
     let longitude: number;
@@ -683,6 +688,7 @@ export class Chart implements OnInit {
       let data_array: any = [];
       let today = new Date().toUTCString(); //GMT
       let title: string;
+      let temperature_current: any;
 
       let humidity_current: any;
       let humidity_values: any = [];
@@ -701,29 +707,39 @@ export class Chart implements OnInit {
 
 
       if (country !== '') {
-        title = `A weather forecast for a week in ${country}`;
+        title = `Temperature in ${country}`;
       } else {
-        title = `A weather forecast for a week by latitude: ${latitude} and longitude: ${longitude}`
+        title = `Temperature by latitude: ${latitude} and longitude: ${longitude}`
       }
-
+      let now_checked = false;
       posts = Response;
       post = posts.hourly;
 
       now = Date.parse(today) + posts.utc_offset_seconds * 1000;
       let now_hour = Math.round(now / p) * p;
+      let index_24 = 10000;
 
       let index = 0;
       for (let item of post.time) {
+
         data_array[index] = [(item + posts.utc_offset_seconds) * 1000];
-        humidity_values[index] = [(item + posts.utc_offset_seconds) * 1000];
-        pressure_values[index] = [(item + posts.utc_offset_seconds) * 1000];
-        wind_values[index] = [(item + posts.utc_offset_seconds) * 1000];
-        wind_direction_value[index] = [(item + posts.utc_offset_seconds) * 1000];
+        if (now_checked) {
+          index_24 = index + 24;
+          now_checked = false;
+        }
+        if (index <= index_24) {
+          humidity_values[index] = [(item + posts.utc_offset_seconds) * 1000];
+          pressure_values[index] = [(item + posts.utc_offset_seconds) * 1000];
+          wind_values[index] = [(item + posts.utc_offset_seconds) * 1000];
+          wind_direction_value[index] = [(item + posts.utc_offset_seconds) * 1000];
+        }
         if (Number(data_array[index][0]) == (now_hour)) {
+          temperature_current = post.temperature_2m[index];
           humidity_current = post.relativehumidity_2m[index];
-          pressure_curent = post.surface_pressure[index];
+          pressure_curent = Math.round(post.surface_pressure[index] / 1.333);
           wind_current_speed = post.windspeed_10m[index];
           wind_current_direction = post.winddirection_10m[index];
+          now_checked = true;
         }
         index++;
       }
@@ -733,71 +749,122 @@ export class Chart implements OnInit {
         data_array[index].push(item);
         index++;
       }
+
       index = 0;
       for (let item of post.relativehumidity_2m) {
-        humidity_values[index].push(item);
+        let limit = humidity_values.length;
+        if (index == limit) {
+          break;
+        } else {
+          humidity_values[index].push(item);
+        }
         index++;
       }
 
       index = 0;
       for (let item of post.surface_pressure) {
-        pressure_values[index].push(Math.round(item / 1.333));
+        let limit = humidity_values.length;
+        if (index == limit) {
+          break;
+        } else {
+          pressure_values[index].push(Math.round(item / 1.333));
+        }
         index++;
       }
       index = 0;
       for (let item of post.windspeed_10m) {
-        wind_values[index].push(item);
+        let limit = humidity_values.length;
+        if (index == limit) {
+          break;
+        } else {
+          wind_values[index].push(item);
+        }
         index++;
       }
       index = 0;
       for (let item of post.winddirection_10m) {
-        wind_direction_value[index].push(item);
+        let limit = humidity_values.length;
+        if (index == limit) {
+          break;
+        } else {
+          wind_direction_value[index].push(item);
+        }
         index++;
       }
-
-      for (let index = 0; index < 360; index++) {
-        switch (index) {
-          case 0: this.array_of_null[index] = 'N';
-          break;
-          case 90: this.array_of_null[index] = 'E';
-          break;
-          case 180: this.array_of_null[index] = 'S';
-          break;
-          case 270: this.array_of_null[index] = 'W';
-          break;
-          default: this.array_of_null[index] = index;
-        }
-        
-      }
-
+      let t_unit_string = '';
       if (t_unit) {
-        this.chartOptions.yAxis.title.text = "Temperature °F";
-        this.chartOptions.tooltip.valueSuffix = " °F"
+        t_unit_string = " °F";
         this.chartOptions.plotOptions.series.zones = [{ value: -58, color: '#2975E6' }, { value: -40, color: '#29A1E6' }, { value: -22, color: '#29C1E6' }, { value: -4, color: '#29E6CD' }, { value: 14, color: '#1FD882' }, { value: 23, color: '#1EDA50' }, { value: 32, color: '#7AE446' }, { value: 41, color: '#9FE446' }, { value: 50, color: '#F0E218' }, { value: 68, color: '#F0AF18' }, { value: 86, color: '#EFA119' }, { value: 104, color: '#F07D18' }, { color: '#F04B18' }];
-        // [-58, -40, -22, -4, 14, 23, 32, 41, 50, 68, 86, 104] 
+
       } else {
-        this.chartOptions.yAxis.title.text = "Temperature °C";
-        this.chartOptions.tooltip.valueSuffix = " °C"
+        t_unit_string = " °C";
         this.chartOptions.plotOptions.series.zones = [{ value: -50, color: '#2975E6' }, { value: -40, color: '#29A1E6' }, { value: -30, color: '#29C1E6' }, { value: -20, color: '#29E6CD' }, { value: -10, color: '#1FD882' }, { value: -5, color: '#1EDA50' }, { value: 0, color: '#7AE446' }, { value: 5, color: '#9FE446' }, { value: 10, color: '#F0E218' }, { value: 20, color: '#F0AF18' }, { value: 30, color: '#EFA119' }, { value: 40, color: '#F07D18' }, { color: '#F04B18' }];
       }
+      this.chartOptions.yAxis.title.text = `Temperature${t_unit_string}`;
+      this.chartOptions.tooltip.valueSuffix = t_unit_string
 
       this.chartOptions.xAxis.plotLines[0].value = now;
       this.chartOptions.series[0].data = data_array;
       this.chartOptions.series[0].name = country;
       this.chartOptions.title.text = title;
+      this.chartOptions.annotations = [{
+        labelOptions: {
+          backgroundColor: 'rgba(255,255,255,0.5)',
+          verticalAlign: 'top',
+          x: 120
+        },
+        labels: [{
+          point: { xAxis: 0, yAxis: 0, x: now, y: temperature_current },
+          text: `Local time: ${new Date(now).toUTCString()} <br/> Temperature: ${temperature_current}${t_unit_string}`
+        }]
+      }];
 
       this.humidity_chartOptions_area.xAxis.plotLines[0].value = now;
       this.humidity_chartOptions_area.series[0].data = humidity_values;
-
+      this.humidity_chartOptions_area.annotations = [{
+        labelOptions: {
+          backgroundColor: 'rgba(255,255,255,0.5)',
+          verticalAlign: 'top',
+          x: 50,
+          y: -12
+        },
+        labels: [{
+          point: { xAxis: 0, yAxis: 0, x: now, y: humidity_current },
+          text: `Humidity: ${humidity_current} %`
+        }]
+      }];
 
       this.pressure_chartOptions_area.xAxis.plotLines[0].value = now;
       this.pressure_chartOptions_area.series[0].data = pressure_values;
-
+      this.pressure_chartOptions_area.annotations = [{
+        labelOptions: {
+          backgroundColor: 'rgba(255,255,255,0.5)',
+          verticalAlign: 'top',
+          x: 65,
+          y: -12
+        },
+        labels: [{
+          point: { xAxis: 0, yAxis: 0, x: now, y: pressure_curent },
+          text: `Pressure: ${pressure_curent} mm Hg`
+        }]
+      }];
+      console.log(pressure_curent);
       this.wind_chartOptions_area.xAxis.plotLines[0].value = now;
       this.wind_chartOptions_area.series[0].data = wind_values;
       this.wind_chartOptions_gauge.series[0].data = [wind_current_direction];
       this.wind_chartOptions_gauge.series[1].data = [wind_current_speed];
-      this.wind_chartOptions_gauge.yAxis.categories = this.array_of_null;
+      this.wind_chartOptions_area.annotations = [{
+        labelOptions: {
+          backgroundColor: 'rgba(255,255,255,0.5)',
+          verticalAlign: 'top',
+          x: 55,
+          y: -20
+        },
+        labels: [{
+          point: { xAxis: 0, yAxis: 0, x: now, y: wind_current_speed },
+          text: `Speed: ${wind_current_speed} m/s <br/> Direction ${wind_current_direction} °`
+        }]
+      }];
 
       this.humidity_chart_gauge = Highcharts.chart('container-humidity-chart', this.humidity_chartOptions_area);
       this.pressure_chart_area = Highcharts.chart('container-pressure-chart', this.pressure_chartOptions_area);
@@ -809,7 +876,6 @@ export class Chart implements OnInit {
 
 
   city_selected(value = []) {
-    console.log(value);
     country_name = value[0];
     country_code = value[1];
     this.getUpToData(country_code, country_name, this.selected_unit_celsius)
