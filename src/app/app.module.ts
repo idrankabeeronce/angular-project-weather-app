@@ -4,7 +4,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { Chart } from './chart/chart.component';
 import { DialogOverviewExampleDialog } from './chart/chart.component';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { HighchartsChartModule } from 'highcharts-angular';
 import { BottomComponent } from './bottom/bottom.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -14,18 +14,29 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
 import { MatMenuModule } from '@angular/material/menu';
-import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {MatGridListModule} from '@angular/material/grid-list';
-import {MatCheckboxModule} from '@angular/material/checkbox';
-import {MatDialogModule} from '@angular/material/dialog';
-import {MatAutocompleteModule} from '@angular/material/autocomplete';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatGridListModule } from '@angular/material/grid-list';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { PostService } from './services/post.service';
+import { MapComponent } from './map/map.component';
+import { HeaderComponent } from './header/header.component';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { ChartSettingsComponent } from './chart/chart-settings/chart-settings.component';
+import { ChartsPageComponent } from './charts-page/charts-page.component';
 
 @NgModule({
+
   declarations: [
     AppComponent,
     Chart,
     BottomComponent,
     DialogOverviewExampleDialog,
+    MapComponent,
+    HeaderComponent,
+    ChartSettingsComponent,
+    ChartsPageComponent,
   ],
   imports: [
     BrowserModule,
@@ -45,11 +56,11 @@ import {MatAutocompleteModule} from '@angular/material/autocomplete';
     MatCheckboxModule,
     MatDialogModule,
     MatAutocompleteModule,
-    
+    MatSnackBarModule
   ],
-  providers: [],
+  providers: [PostService, Chart],
   bootstrap: [AppComponent]
 })
-export class AppModule { 
-  
+export class AppModule {
+
 }

@@ -17,7 +17,7 @@ export class PostService {
     if (t_unit) {
       t_unit_string = 'temperature_unit=fahrenheit&'
     };
-    return this.httpClient.get(`http://api.open-meteo.com/v1/forecast?latitude=${ latitude }&longitude=${ longtitude }&hourly=temperature_2m,relativehumidity_2m,surface_pressure,windspeed_10m,winddirection_10m&windspeed_unit=ms&${ t_unit_string }timeformat=unixtime&timezone=auto`);
+    return this.httpClient.get(`http://api.open-meteo.com/v1/forecast/?latitude=${ latitude }&longitude=${ longtitude }&hourly=temperature_2m,relativehumidity_2m,rain,snowfall,precipitation,cloudcover,surface_pressure,windspeed_10m,winddirection_10m&windspeed_unit=ms&${ t_unit_string }timeformat=unixtime&timezone=auto`);
   }                             
   getCityJson() {
     return this.httpClient.get('https://raw.githubusercontent.com/lutangar/cities.json/master/cities.json');

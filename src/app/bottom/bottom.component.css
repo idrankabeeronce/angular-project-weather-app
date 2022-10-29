@@ -3,6 +3,10 @@ a, h2 {
     color: rgb(50, 50, 50);
     font-weight: lighter;
 }
+hr {
+    width: 80%;
+    margin: 40px auto;
+}
 .bottom-panel {
     text-align: center;
     display: block;

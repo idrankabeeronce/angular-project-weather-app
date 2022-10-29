@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { Chart } from './chart.component';
+import { MatDialogModule} from '@angular/material/dialog';
+import { MatMenuModule } from '@angular/material/menu';
 
 describe('Chart', () => {
   let component: Chart;
@@ -8,6 +10,11 @@ describe('Chart', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
+      imports: [
+        MatDialogModule,
+        HttpClientTestingModule,
+        MatMenuModule
+      ],
       declarations: [ Chart ]
     })
     .compileComponents();
