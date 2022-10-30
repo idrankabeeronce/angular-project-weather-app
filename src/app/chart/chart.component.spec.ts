@@ -3,6 +3,8 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { Chart } from './chart.component';
 import { MatDialogModule} from '@angular/material/dialog';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { RouterTestingModule } from "@angular/router/testing";
 
 describe('Chart', () => {
   let component: Chart;
@@ -13,7 +15,9 @@ describe('Chart', () => {
       imports: [
         MatDialogModule,
         HttpClientTestingModule,
-        MatMenuModule
+        MatMenuModule,
+        MatSnackBarModule,
+        RouterTestingModule
       ],
       declarations: [ Chart ]
     })

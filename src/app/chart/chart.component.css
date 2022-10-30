@@ -113,7 +113,14 @@ a {
     font-weight: lighter;
 
 }
-
+#arrow {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    background-image: url(https://iconmonstr.com/wp-content/g/gd/makefg.php?i=../releases/preview/7.0.0/png/iconmonstr-arrow-left-lined.png&r=106&g=106&b=255);
+    background-size: cover;
+    background-repeat: no-repeat;
+}
 
 
 @media (max-width: 22200px) {

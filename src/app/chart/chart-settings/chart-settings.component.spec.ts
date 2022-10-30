@@ -1,6 +1,11 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ChartSettingsComponent } from './chart-settings.component';
+import { Chart } from '../chart.component';
+import { MatDialogModule} from '@angular/material/dialog';
+import { MatMenuModule } from '@angular/material/menu';
+import { RouterTestingModule } from "@angular/router/testing";
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 describe('ChartSettingsComponent', () => {
   let component: ChartSettingsComponent;
@@ -8,7 +13,9 @@ describe('ChartSettingsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ChartSettingsComponent ]
+      imports: [HttpClientTestingModule, RouterTestingModule, MatDialogModule,MatSnackBarModule, MatMenuModule],
+      declarations: [ ChartSettingsComponent, Chart ],
+      providers: [Chart]
     })
     .compileComponents();
 

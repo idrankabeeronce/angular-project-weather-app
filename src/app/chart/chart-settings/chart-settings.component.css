@@ -3,14 +3,17 @@ input::-webkit-inner-spin-button {
     appearance: none;
     margin: 0;
 }
-::ng-deep .mat-select-panel::-webkit-scrollbar { 
-    display: none; 
+
+::ng-deep .mat-select-panel::-webkit-scrollbar {
+    display: none;
 }
+
 .background-img {
     width: 100%;
     height: 100%;
     z-index: -1;
 }
+
 #container-settings {
     width: auto;
     height: auto;
@@ -39,24 +42,30 @@ input::-webkit-inner-spin-button {
 mat-form-field {
     width: 100%;
 }
+
 #form_queary_params {
     margin: 10px 0;
 }
+
 #content-box {
     padding: 0 5px;
     width: calc(50% - 10px);
 }
+
 mat-card {
     margin: 10px;
 }
+
 @media (max-width: 700px) {
     mat-form-field {
         padding: 0 5px;
         width: calc(100% - 10px);
     }
+
     #container-settings {
         padding: 0;
     }
+
     ::ng-deep .mat-checkbox-layout .mat-checkbox-label {
         line-height: 12px;
         white-space: break-spaces;

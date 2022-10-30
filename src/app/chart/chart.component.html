@@ -1,53 +1,55 @@
-
-  <div class="container-panel">
-    <div class="container-weather-panels">
-      <div class="header-weather-panel">
-        <a href="https://www.google.com/maps/@{{latitudeS}},{{longitudeS},15z">Show on google maps</a>
-        <br>
-        <span>Latitude: {{RouteLat}} / Longitude: {{RouteLon}}</span>
-        <br>
-        <span>Timezone: {{localTimezone}} / Local time: {{localTime}}</span>
-      </div>
-      <mat-card class="weather-panels">      
-        <table class="table-weather">
-          <thead>
-            <tr>
-              <th *ngFor="let time of table_header_time">{{time}}</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td *ngFor="let item of table_array_class">
-                <span  [style]="item.iconStyle" class="weather-icon"></span>
-                <br>
-                <span id="table-temp-span">{{item.temp}} °C</span>
-                <br>
-                <span>{{item.rain}} mm</span>
-                <br>
-                <span>{{item.windDir}}</span>
-                <br>
-                <span>{{item.windSpeed}} m/s</span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </mat-card>
+<div class="container-panel">
+  <div [style]="style_hourly_weather" class="container-weather-panels">
+    <div class="header-weather-panel">
+      <a href="https://www.google.com/maps/@{{latitudeS}},{{longitudeS}},15z">Show on google maps</a>
+      <br>
+      <span>Latitude: {{RouteLat}} / Longitude: {{RouteLon}}</span>
+      <br>
+      <span>Timezone: {{localTimezone}} / Local time: {{localTime}}</span>
     </div>
-    <div id="container-charts">
-      <mat-card class="charts-card">
-        <div id="container-chart"></div>
+    <mat-card class="weather-panels">
+      <table class="table-weather">
+        <thead>
+          <tr>
+            <th *ngFor="let time of table_header_time">{{time}}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td *ngFor="let item of table_array_class">
+              <span [style]="item.iconStyle" class="weather-icon"></span>
+              <br>
+              <span id="table-temp-span">{{item.temp}} °C</span>
+              <br>
+              <span>{{item.rain}} mm</span>
+              <br>
+              <div>
+                <span [style]="item.windDirStyle" id="arrow"></span>
+                <span id="span-wind-dir">{{item.windDir}}</span>
+              </div>
+              <br>
+              <span>{{item.windSpeed}} m/s</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </mat-card>
+  </div>
+  <div id="container-charts">
+    <mat-card class="charts-card">
+      <div id="container-chart"></div>
+    </mat-card>
+    <div id="container-ad-charts">
+      <mat-card class="charts-card" id="charts-card-ad">
+        <div id="container-humidity-chart"></div>
       </mat-card>
-      <div id="container-ad-charts">
-        <mat-card class="charts-card" id="charts-card-ad">
-          <div id="container-humidity-chart"></div>
-        </mat-card>
-        <mat-card class="charts-card" id="charts-card-ad" >
-          <div id="container-pressure-chart"></div>
-        </mat-card>
-        <mat-card class="charts-card" id="charts-card-ad">
-          <div id="container-wind-chart" (click)="change_wind_chart()">
-          </div>
-        </mat-card>
-      </div>
+      <mat-card class="charts-card" id="charts-card-ad">
+        <div id="container-pressure-chart"></div>
+      </mat-card>
+      <mat-card class="charts-card" id="charts-card-ad">
+        <div id="container-wind-chart" (click)="change_wind_chart()">
+        </div>
+      </mat-card>
     </div>
   </div>
+</div>

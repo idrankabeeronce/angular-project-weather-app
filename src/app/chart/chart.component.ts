@@ -5,10 +5,10 @@ require('highcharts/highcharts-more')(Highcharts);
 import { HighchartsChartModule } from 'highcharts-angular';
 require('highcharts/modules/annotations')(Highcharts);
 import { PostService } from '../services/post.service';
-import { FormControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { FormControl, FormGroup } from '@angular/forms';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 interface tableClass {
   temp: number;
@@ -17,6 +17,7 @@ interface tableClass {
   windSpeed: number;
   windDir: string;
   iconStyle: string;
+  windDirStyle: string;
 };
 interface arrayTableClass extends Array<tableClass> { };
 
@@ -91,8 +92,8 @@ export class Chart implements OnInit, HighchartsChartModule {
   wind_chart_area: any;
   change_wind_check = true;
 
-  localTime:any;
-  localTimezone:any;
+  localTime: any;
+  localTimezone: any;
   latitudeS: any;
   longitudeS: any;
   selectedType_form = new FormControl('spline');
@@ -106,7 +107,7 @@ export class Chart implements OnInit, HighchartsChartModule {
   countries_list: any[] = [[], []];
   cities_list: any[] = [[], []];
   check_box = false;
-
+  tableParams: any;
   humidity_chartOptions_area: any = {
     chart: {
       type: 'areaspline',
@@ -641,21 +642,23 @@ export class Chart implements OnInit, HighchartsChartModule {
   table_array: any = [];
   table_array_class: arrayTableClass = [];
   form: FormGroup = new FormGroup({});
-  weather_icon_style = {'background-image':'url(https://cdn-icons-png.flaticon.com/512/869/869869.png)'};
+  weather_icon_style = { 'background-image': 'url(https://cdn-icons-png.flaticon.com/512/869/869869.png)' };
+  style_hourly_weather = { 'display': 'none' };
 
-  constructor(public service: PostService, public dialog: MatDialog, private _snackBar: MatSnackBar, private Route: ActivatedRoute) {
+  constructor(public service: PostService, public dialog: MatDialog, private _snackBar: MatSnackBar, private router: Router, private Route: ActivatedRoute) {
     this.RouteLat = Number(this.Route.snapshot.paramMap.get('latitude'));
     this.RouteLon = Number(this.Route.snapshot.paramMap.get('longitude'));
   }
 
   ngOnInit(): void {
-    this.get_country();
+
     country_name = 'Moscow';
     country_code = 'RU';
     if (this.Route.component == Chart) {
       this.get_forecast(this.RouteLat, this.RouteLon, '', this.selected_unit_celsius)
+      this.style_hourly_weather = { 'display': 'block' };
     } else {
-      
+      this.style_hourly_weather = { 'display': 'none' };
       this.getUpToData(country_code, country_name, this.selected_unit_celsius);
     }
   }
@@ -667,7 +670,6 @@ export class Chart implements OnInit, HighchartsChartModule {
   getUpToData(code: string, country: string, t_unit: boolean) {
     let latitude: number;
     let longitude: number;
-
     this.service.getCityJson().subscribe(Response => {
       let items = JSON.stringify(Response);
       for (let item of JSON.parse(items)) {
@@ -686,7 +688,6 @@ export class Chart implements OnInit, HighchartsChartModule {
     });
   }
   get_forecast(latitude: any, longitude: any, country: any, t_unit: boolean) {
-
     this.service.getPosts(latitude, longitude, t_unit).subscribe(Response => {
       let posts: any;
       let post = [];
@@ -723,18 +724,18 @@ export class Chart implements OnInit, HighchartsChartModule {
       let string_offset;
       now = Date.parse(today) + posts.utc_offset_seconds * 1000;
       if (posts.utc_offset_seconds >= 0) {
-        string_offset = "+"+String(posts.utc_offset_seconds/3600)
+        string_offset = "+" + String(posts.utc_offset_seconds / 3600)
       } else {
-        string_offset = String(posts.utc_offset_seconds/3600)
+        string_offset = String(posts.utc_offset_seconds / 3600)
       }
       this.localTimezone = posts.timezone + " (UTC" + string_offset + ")";
       this.latitudeS = posts.latitude;
       this.longitudeS = posts.longitude;
-      let now_h = new Date(now).getUTCHours().toString().padStart(2,'0');
-      let now_m = new Date(now).getUTCMinutes().toString().padStart(2,'0');
-      let now_day = new Date(now).getUTCDate().toString().padStart(2,'0');
-      let now_month = new Date(now).getUTCMonth().toString().padStart(2,'0');
-      let now_year = new Date(now).getUTCFullYear().toString().padStart(4,'0');
+      let now_h = new Date(now).getUTCHours().toString().padStart(2, '0');
+      let now_m = new Date(now).getUTCMinutes().toString().padStart(2, '0');
+      let now_day = new Date(now).getUTCDate().toString().padStart(2, '0');
+      let now_month = new Date(now).getUTCMonth().toString().padStart(2, '0');
+      let now_year = new Date(now).getUTCFullYear().toString().padStart(4, '0');
       this.localTime = `${now_h}:${now_m} ${now_day}.${now_month}.${now_year}`
       //this.localTime = new Date(now).toUTCString();
       let now_hour = Math.round(now / p) * p;
@@ -758,7 +759,7 @@ export class Chart implements OnInit, HighchartsChartModule {
 
         }
         if (Number(data_array[index][0]) == (now_hour)) {
-          
+
           temperature_current = post.temperature_2m[index];
           humidity_current = post.relativehumidity_2m[index];
           pressure_curent = Math.round(post.surface_pressure[index] / 1.333);
@@ -770,30 +771,30 @@ export class Chart implements OnInit, HighchartsChartModule {
         if (index >= index_0 && index <= index_24) {
           let date = new Date((item + posts.utc_offset_seconds) * 1000);
           let newDate = new Date(date.getTime() + date.getTimezoneOffset() * 60000);
-          
+
           let hours = newDate.getHours();
           let minutes = newDate.getMinutes();
           let day = newDate.getDate();
           let month = newDate.getMonth() + 1;
-          let time = `${day.toString().padStart(2,'0')}.${month.toString().padStart(2,'0')}\n${hours.toString().padStart(2,'0')}:${minutes.toString().padStart(2,'0')}`;
+          let time = `${day.toString().padStart(2, '0')}.${month.toString().padStart(2, '0')}\n${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
           this.table_header_time[index_th] = [time];
           let indWindDir = this.calc_wind_dir(post.winddirection_10m[index]);
-          let cloud_int:number = 0;
-          let rain_bool:boolean = false;
-          let snow_bool:boolean = false;
-          let icoSt:string = '';
-          let nightSufix:string = '';
-          console.log(hours);
-          if (hours >= 21 || hours <=7) {
+          let cloud_int: number = 0;
+          let rain_bool: boolean = false;
+          let snow_bool: boolean = false;
+          let icoSt: string = '';
+          let windDirStyle: string = indWindDir[1];
+          let nightSufix: string = '';
+          if (hours >= 21 || hours <= 7) {
             nightSufix = '-night';
           }
           if (post.cloudcover[index] >= 25) {
             cloud_int = 1;
-            
-          } 
+
+          }
           if (post.cloudcover[index] >= 60) {
             cloud_int = 2;
-            
+
           }
           if (post.rain[index] > 0) {
             rain_bool = true;
@@ -802,26 +803,26 @@ export class Chart implements OnInit, HighchartsChartModule {
             snow_bool = true;
           }
           switch (true) {
-            case(rain_bool):
+            case (rain_bool):
               switch (true) {
-                  case (cloud_int == 2):
-                    icoSt = 'background-image: url(/assets/rain.png)';
-                    break;
-                  default:
-                    icoSt = `background-image: url(/assets/clear-rain${nightSufix}.png)`;
-                    break;
-              } 
+                case (cloud_int == 2):
+                  icoSt = 'background-image: url(/assets/rain.png)';
+                  break;
+                default:
+                  icoSt = `background-image: url(/assets/clear-rain${nightSufix}.png)`;
+                  break;
+              }
               break;
-              case(snow_bool):
+            case (snow_bool):
               switch (true) {
-                  case (cloud_int == 2):
-                    icoSt = 'background-image: url(/assets/snow.png)';
-                    break;
-                  default:
-                    icoSt = `background-image: url(/assets/clear-snow${nightSufix}.png)`;
-                    break;
-              } 
-              break;  
+                case (cloud_int == 2):
+                  icoSt = 'background-image: url(/assets/snow.png)';
+                  break;
+                default:
+                  icoSt = `background-image: url(/assets/clear-snow${nightSufix}.png)`;
+                  break;
+              }
+              break;
             case (cloud_int == 2):
               icoSt = 'background-image: url(/assets/cloud.png)';
               break;
@@ -832,9 +833,9 @@ export class Chart implements OnInit, HighchartsChartModule {
               icoSt = `background-image: url(/assets/clear${nightSufix}.png); background-size: 80%;`;
               break
           }
-          
-          this.table_array_class[index_th] = { temp: post.temperature_2m[index], rain: post.precipitation[index], cloud: post.cloudcover[index], windDir: indWindDir, windSpeed: post.windspeed_10m[index], iconStyle: icoSt };
-          console.log(icoSt);
+
+          this.table_array_class[index_th] = { temp: post.temperature_2m[index], rain: post.precipitation[index], cloud: post.cloudcover[index], windDir: indWindDir[0], windDirStyle: indWindDir[1], windSpeed: post.windspeed_10m[index], iconStyle: icoSt };
+
           index_th++
         }
 
@@ -966,7 +967,6 @@ export class Chart implements OnInit, HighchartsChartModule {
       this.highcharts = Highcharts.chart('container-chart', this.chartOptions);
       let viewportOffset = document.body.getElementsByClassName('container-panel')[0].getBoundingClientRect();
       this.check_type(this.selectedType);
-      console.log(viewportOffset.top)
       window.scrollBy({
         left: 0,
         top: viewportOffset.top,
@@ -980,49 +980,48 @@ export class Chart implements OnInit, HighchartsChartModule {
   }
 
   calc_wind_dir(dir: number) {
+    let style: string;
     let result: string;
     switch (true) {
       case (dir < 23):
-        result = "↑N"
+        result = "N";
+        style = "transform: rotate(90deg)";
         break;
       case (dir < 68):
-        result = "↗NE"
+        result = "NE";
+        style = "transform: rotate(135deg)";
         break;
       case (dir < 113):
-        result = "→E"
-
+        result = "E";
+        style = "transform: rotate(180deg)";
         break;
       case (dir < 158):
-        result = "↘SE"
-
+        result = "SE";
+        style = "transform: rotate(225deg)";
         break;
       case (dir < 203):
-        result = "↓S"
-
+        result = "S";
+        style = "transform: rotate(270deg)";
         break;
       case (dir < 248):
-        result = "↙SW"
-
+        result = "SW";
+        style = "transform: rotate(315deg)";
         break;
       case (dir < 293):
-        result = "←W"
-
+        result = "W";
+        style = "transform: rotate(0deg)";
         break;
       case (dir < 338):
-        result = "↖NW"
+        result = "NW";
+        style = "transform: rotate(45deg)";
         break;
       default:
-        result = "↑N"
+        result = "N";
+        style = "transform: rotate(90deg)";
         break;
     }
-    return result;
+    return [result, style];
   }
-  city_selected(value: any) {
-    country_name = value.name;
-    country_code = value.country;
-    this.getUpToData(country_code, country_name, this.selected_unit_celsius)
-  }
-
   Submit_by_params(lat: string, lon: string) {
     this.RouteLat = Number(lat);
     this.RouteLon = Number(lon);
@@ -1080,38 +1079,7 @@ export class Chart implements OnInit, HighchartsChartModule {
       }
     }
   }
-  get_country() {
-    this.service.getCounryCSV().subscribe(data => {
 
-      const list = data.split('\n');
-      let index = 0;
-      list.slice(1).forEach(element => {
-        if (element != '') {
-          element = element.replace('\r', '');
-          let row = element.split(",");
-          this.countries_list[index] = ([row[0]]);
-          this.countries_list[index].push(row[1]);
-          index++;
-        }
-      });
-    })
-
-  }
-  find_cities(country: any) {
-    this.service.getCityJson().subscribe(Response => {
-      let items = JSON.stringify(Response);
-      let index = 0;
-      this.cities_list = [];
-      for (let item of JSON.parse(items)) {
-        if (item.country == country[1]) {
-          this.cities_list[index] = ([item.name]);
-          this.cities_list[index].push(item.country)
-          index++;
-        }
-      }
-      this.cities_list = this.cities_list.reverse();
-    })
-  }
 
   async switch_country_select(e: any, country: any, city: any) {
 
@@ -1157,7 +1125,6 @@ export class Chart implements OnInit, HighchartsChartModule {
     }
     this.change_wind_check = !this.change_wind_check;
   }
-
 }
 
 @Component({
