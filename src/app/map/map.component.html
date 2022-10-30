@@ -70,11 +70,11 @@
     <div class="control-panel">
         <h2>Location</h2>
         <div id="buttons-panel">
-        <a routerLink="/weather-forecast" routerLinkActive="active" ariaCurrentWhenActive="page"><button id=""
-                mat-raised-button type='button' mat-button>Page with charts</button></a>
-        <button id="close-charts" mat-button type="button" mat-raised-button (click)="changeRoute()">
-        </button>
-    </div>
+            <button routerLink="/weather-forecast" routerLinkActive="active" ariaCurrentWhenActive="page"
+                id="route-button" mat-flat-button type='button' mat-button></button>
+            <button id="close-charts" mat-button type="button" mat-flat-button (click)="changeRoute()">
+            </button>
+        </div>
     </div>
     <div class="charts-container">
         <router-outlet></router-outlet>

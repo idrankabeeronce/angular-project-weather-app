@@ -50,15 +50,16 @@ import { ChartsPageComponent } from './charts-page/charts-page.component';
     MatIconModule,
     MatCardModule,
     MatMenuModule,
-    FormsModule,
-    ReactiveFormsModule,
     MatGridListModule,
     MatCheckboxModule,
     MatDialogModule,
     MatAutocompleteModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    FormsModule,
+    ReactiveFormsModule
+    
   ],
-  providers: [PostService, Chart],
+  providers: [PostService,Chart],
   bootstrap: [AppComponent]
 })
 export class AppModule {
