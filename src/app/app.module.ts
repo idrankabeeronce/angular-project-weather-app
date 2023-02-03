@@ -57,7 +57,6 @@ import { ChartsPageComponent } from './charts-page/charts-page.component';
     MatSnackBarModule,
     FormsModule,
     ReactiveFormsModule
-    
   ],
   providers: [PostService,Chart],
   bootstrap: [AppComponent]

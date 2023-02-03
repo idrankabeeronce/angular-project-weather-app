@@ -28,7 +28,6 @@ export class ChartSettingsComponent implements OnInit {
           index++;
         }
       });
-      console.log(this.chart.countries_list);
     })
 
   }
@@ -57,7 +56,6 @@ export class ChartSettingsComponent implements OnInit {
       country_name = value[0];
       country_code = value[1];
     }
-    console.log(value);
     this.chart.getUpToData(country_code, country_name, this.chart.selected_unit_celsius)
   }
 }

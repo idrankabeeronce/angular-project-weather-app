@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import * as Highcharts from 'highcharts';
 declare var require: any;
 require('highcharts/highcharts-more')(Highcharts);
@@ -35,52 +35,7 @@ country_code = 'RU';
 })
 export class Chart implements OnInit, HighchartsChartModule {
 
-  cities = [
-    {
-      "country": "RU",
-      "name": "Moscow"
-    },
-    {
-      "country": "ES",
-      "name": "Madrid"
-    },
-    {
-      "country": "AM",
-      "name": "Yerevan"
-    },
-    {
-      "country": "DE",
-      "name": "Berlin"
-    },
-    {
-      "country": "GB",
-      "name": "London"
-    },
-    {
-      "country": "US",
-      "name": "New York City",
-    },
-    {
-      "country": "JP",
-      "name": "Kyoto"
-    },
-    {
-      "country": "CA",
-      "name": "Ottawa"
-    },
-    {
-      "country": "IT",
-      "name": "Rome"
-    },
-    {
-      "country": "GE",
-      "name": "Tbilisi"
-    },
-    {
-      "country": "JP",
-      "name": "Tokyo"
-    }
-  ];
+  cities = [{ "country": "RU", "name": "Moscow" }, { "country": "ES", "name": "Madrid" }, { "country": "AM", "name": "Yerevan" }, { "country": "DE", "name": "Berlin" }, { "country": "GB", "name": "London" }, { "country": "US", "name": "New York City", }, { "country": "JP", "name": "Kyoto" }, { "country": "CA", "name": "Ottawa" }, { "country": "IT", "name": "Rome" }, { "country": "GE", "name": "Tbilisi" }, { "country": "JP", "name": "Tokyo" }];
   selected = this.cities[0];
 
   humidity_chart_gauge: any;
@@ -546,11 +501,6 @@ export class Chart implements OnInit, HighchartsChartModule {
         },
 
         dial: {
-
-          //radius: '90%',
-          //topWidth: 1,
-          //baseWidth:10,
-          //baseLength: 1,
           backgroundColor: 'white',
           borderWidth: 1,
           borderColor: 'black',
@@ -646,17 +596,17 @@ export class Chart implements OnInit, HighchartsChartModule {
   style_hourly_weather = { 'display': 'none' };
 
   constructor(public service: PostService, public dialog: MatDialog, private _snackBar: MatSnackBar, private router: Router, private Route: ActivatedRoute) {
-    this.RouteLat = Number(this.Route.snapshot.paramMap.get('latitude'));
-    this.RouteLon = Number(this.Route.snapshot.paramMap.get('longitude'));
+
   }
 
   ngOnInit(): void {
-
+    this.RouteLat = Number(this.Route.snapshot.paramMap.get('latitude'));
+    this.RouteLon = Number(this.Route.snapshot.paramMap.get('longitude'));
     country_name = 'Moscow';
     country_code = 'RU';
+    this.style_hourly_weather = { 'display': 'block' };
     if (this.Route.component == Chart) {
       this.get_forecast(this.RouteLat, this.RouteLon, '', this.selected_unit_celsius)
-      this.style_hourly_weather = { 'display': 'block' };
     } else {
       this.style_hourly_weather = { 'display': 'none' };
       this.getUpToData(country_code, country_name, this.selected_unit_celsius);
@@ -688,295 +638,301 @@ export class Chart implements OnInit, HighchartsChartModule {
     });
   }
   get_forecast(latitude: any, longitude: any, country: any, t_unit: boolean) {
-    this.service.getPosts(latitude, longitude, t_unit).subscribe(Response => {
-      let posts: any;
-      let post = [];
-      let data_array: any = [];
-      let today = new Date().toUTCString(); //GMT
-      let title: string;
-      let temperature_current: any;
 
-      let humidity_current: any;
-      let humidity_values: any = [];
+    this.service.getPosts(latitude, longitude, t_unit).subscribe({
+      next: ((Response) => {
+        let posts: any;
+        let post = [];
+        let data_array: any = [];
+        let today = new Date().toUTCString(); //GMT
+        let title: string;
+        let temperature_current: any;
 
-      let pressure_curent: any;
-      let pressure_values: any = [];
+        let humidity_current: any;
+        let humidity_values: any = [];
 
-      let wind_current_speed: any;
-      let wind_current_direction: any;
-      let wind_values: any = [];
-      let wind_direction_value: any = [];
+        let pressure_curent: any;
+        let pressure_values: any = [];
 
-
-      let now: any;
-
-      let p = 60 * 60 * 1000;
+        let wind_current_speed: any;
+        let wind_current_direction: any;
+        let wind_values: any = [];
+        let wind_direction_value: any = [];
 
 
-      if (country !== '') {
-        title = "<img class='chart_title_icon' src='https://www.svgrepo.com/show/199819/thermometer-temperature.svg' alt='' />" + `<p>Temperature in ${country}</p>`;
-      } else {
-        title = "<img class='chart_title_icon' src='https://www.svgrepo.com/show/199819/thermometer-temperature.svg' alt='' />" + `<p>Temperature by ${latitude}°N ${longitude}°E</p>`
-      }
-      let now_checked = false;
-      posts = Response;
-      post = posts.hourly;
-      let string_offset;
-      now = Date.parse(today) + posts.utc_offset_seconds * 1000;
-      if (posts.utc_offset_seconds >= 0) {
-        string_offset = "+" + String(posts.utc_offset_seconds / 3600)
-      } else {
-        string_offset = String(posts.utc_offset_seconds / 3600)
-      }
-      this.localTimezone = posts.timezone + " (UTC" + string_offset + ")";
-      this.latitudeS = posts.latitude;
-      this.longitudeS = posts.longitude;
-      let now_h = new Date(now).getUTCHours().toString().padStart(2, '0');
-      let now_m = new Date(now).getUTCMinutes().toString().padStart(2, '0');
-      let now_day = new Date(now).getUTCDate().toString().padStart(2, '0');
-      let now_month = new Date(now).getUTCMonth().toString().padStart(2, '0');
-      let now_year = new Date(now).getUTCFullYear().toString().padStart(4, '0');
-      this.localTime = `${now_h}:${now_m} ${now_day}.${now_month}.${now_year}`
-      //this.localTime = new Date(now).toUTCString();
-      let now_hour = Math.round(now / p) * p;
-      let index_24 = 10000;
-      let index_0 = 10000;
-      let index = 0;
-      let index_th = 0;
-      for (let item of post.time) {
+        let now: any;
 
-        data_array[index] = [(item + posts.utc_offset_seconds) * 1000];
-        if (now_checked) {
-          index_24 = index + 24;
-          now_checked = false;
-        }
+        let p = 60 * 60 * 1000;
 
-        if (index <= index_24) {
-          humidity_values[index] = [(item + posts.utc_offset_seconds) * 1000];
-          pressure_values[index] = [(item + posts.utc_offset_seconds) * 1000];
-          wind_values[index] = [(item + posts.utc_offset_seconds) * 1000];
-          wind_direction_value[index] = [(item + posts.utc_offset_seconds) * 1000];
 
-        }
-        if (Number(data_array[index][0]) == (now_hour)) {
-
-          temperature_current = post.temperature_2m[index];
-          humidity_current = post.relativehumidity_2m[index];
-          pressure_curent = Math.round(post.surface_pressure[index] / 1.333);
-          wind_current_speed = post.windspeed_10m[index];
-          wind_current_direction = post.winddirection_10m[index];
-          now_checked = true;
-          index_0 = index;
-        }
-        if (index >= index_0 && index <= index_24) {
-          let date = new Date((item + posts.utc_offset_seconds) * 1000);
-          let newDate = new Date(date.getTime() + date.getTimezoneOffset() * 60000);
-
-          let hours = newDate.getHours();
-          let minutes = newDate.getMinutes();
-          let day = newDate.getDate();
-          let month = newDate.getMonth() + 1;
-          let time = `${day.toString().padStart(2, '0')}.${month.toString().padStart(2, '0')}\n${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
-          this.table_header_time[index_th] = [time];
-          let indWindDir = this.calc_wind_dir(post.winddirection_10m[index]);
-          let cloud_int: number = 0;
-          let rain_bool: boolean = false;
-          let snow_bool: boolean = false;
-          let icoSt: string = '';
-          let windDirStyle: string = indWindDir[1];
-          let nightSufix: string = '';
-          if (hours >= 21 || hours <= 7) {
-            nightSufix = '-night';
-          }
-          if (post.cloudcover[index] >= 25) {
-            cloud_int = 1;
-
-          }
-          if (post.cloudcover[index] >= 60) {
-            cloud_int = 2;
-
-          }
-          if (post.rain[index] > 0) {
-            rain_bool = true;
-          }
-          if (post.snowfall[index] > 0) {
-            snow_bool = true;
-          }
-          switch (true) {
-            case (rain_bool):
-              switch (true) {
-                case (cloud_int == 2):
-                  icoSt = 'background-image: url(/assets/rain.png)';
-                  break;
-                default:
-                  icoSt = `background-image: url(/assets/clear-rain${nightSufix}.png)`;
-                  break;
-              }
-              break;
-            case (snow_bool):
-              switch (true) {
-                case (cloud_int == 2):
-                  icoSt = 'background-image: url(/assets/snow.png)';
-                  break;
-                default:
-                  icoSt = `background-image: url(/assets/clear-snow${nightSufix}.png)`;
-                  break;
-              }
-              break;
-            case (cloud_int == 2):
-              icoSt = 'background-image: url(/assets/cloud.png)';
-              break;
-            case (cloud_int == 1):
-              icoSt = `background-image: url(/assets/clear-cloud${nightSufix}.png)`;
-              break;
-            default:
-              icoSt = `background-image: url(/assets/clear${nightSufix}.png); background-size: 80%;`;
-              break
-          }
-
-          this.table_array_class[index_th] = { temp: post.temperature_2m[index], rain: post.precipitation[index], cloud: post.cloudcover[index], windDir: indWindDir[0], windDirStyle: indWindDir[1], windSpeed: post.windspeed_10m[index], iconStyle: icoSt };
-
-          index_th++
-        }
-
-        index++;
-      }
-
-      index = 0;
-      for (let item of post.temperature_2m) {
-        data_array[index].push(item);
-        index++;
-      }
-
-      index = 0;
-      for (let item of post.relativehumidity_2m) {
-        let limit = humidity_values.length;
-        if (index == limit) {
-          break;
+        if (country !== '') {
+          title = "<img class='chart_title_icon' src='https://www.svgrepo.com/show/199819/thermometer-temperature.svg' alt='' />" + `<p>Temperature in ${country}</p>`;
         } else {
-          humidity_values[index].push(item);
+          title = "<img class='chart_title_icon' src='https://www.svgrepo.com/show/199819/thermometer-temperature.svg' alt='' />" + `<p>Temperature by ${latitude}°N ${longitude}°E</p>`
         }
-        index++;
-      }
-
-      index = 0;
-      for (let item of post.surface_pressure) {
-        let limit = humidity_values.length;
-        if (index == limit) {
-          break;
+        let now_checked = false;
+        posts = Response;
+        post = posts.hourly;
+        let string_offset;
+        now = Date.parse(today) + posts.utc_offset_seconds * 1000;
+        if (posts.utc_offset_seconds >= 0) {
+          string_offset = "+" + String(posts.utc_offset_seconds / 3600)
         } else {
-          pressure_values[index].push(Math.round(item / 1.333));
+          string_offset = String(posts.utc_offset_seconds / 3600)
         }
-        index++;
-      }
-      index = 0;
-      for (let item of post.windspeed_10m) {
-        let limit = humidity_values.length;
-        if (index == limit) {
-          break;
+        this.localTimezone = posts.timezone + " (UTC" + string_offset + ")";
+        console.log(this.localTimezone);
+
+        this.latitudeS = posts.latitude;
+        this.longitudeS = posts.longitude;
+        let now_h = new Date(now).getUTCHours().toString().padStart(2, '0');
+        let now_m = new Date(now).getUTCMinutes().toString().padStart(2, '0');
+        let now_day = new Date(now).getUTCDate().toString().padStart(2, '0');
+        let now_month = new Date(now).getUTCMonth().toString().padStart(2, '0');
+        let now_year = new Date(now).getUTCFullYear().toString().padStart(4, '0');
+        this.localTime = `${now_h}:${now_m} ${now_day}.${now_month}.${now_year}`
+        //this.localTime = new Date(now).toUTCString();
+        let now_hour = Math.round(now / p) * p;
+        let index_24 = 10000;
+        let index_0 = 10000;
+        let index = 0;
+        let index_th = 0;
+        for (let item of post.time) {
+
+          data_array[index] = [(item + posts.utc_offset_seconds) * 1000];
+          if (now_checked) {
+            index_24 = index + 24;
+            now_checked = false;
+          }
+
+          if (index <= index_24) {
+            humidity_values[index] = [(item + posts.utc_offset_seconds) * 1000];
+            pressure_values[index] = [(item + posts.utc_offset_seconds) * 1000];
+            wind_values[index] = [(item + posts.utc_offset_seconds) * 1000];
+            wind_direction_value[index] = [(item + posts.utc_offset_seconds) * 1000];
+
+          }
+          if (Number(data_array[index][0]) == (now_hour)) {
+
+            temperature_current = post.temperature_2m[index];
+            humidity_current = post.relativehumidity_2m[index];
+            pressure_curent = Math.round(post.surface_pressure[index] / 1.333);
+            wind_current_speed = post.windspeed_10m[index];
+            wind_current_direction = post.winddirection_10m[index];
+            now_checked = true;
+            index_0 = index;
+          }
+          if (index >= index_0 && index <= index_24) {
+            let date = new Date((item + posts.utc_offset_seconds) * 1000);
+            let newDate = new Date(date.getTime() + date.getTimezoneOffset() * 60000);
+
+            let hours = newDate.getHours();
+            let minutes = newDate.getMinutes();
+            let day = newDate.getDate();
+            let month = newDate.getMonth() + 1;
+            let time = `${day.toString().padStart(2, '0')}.${month.toString().padStart(2, '0')}\n${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+            this.table_header_time[index_th] = [time];
+            let indWindDir = this.calc_wind_dir(post.winddirection_10m[index]);
+            let cloud_int: number = 0;
+            let rain_bool: boolean = false;
+            let snow_bool: boolean = false;
+            let icoSt: string = '';
+            let windDirStyle: string = indWindDir[1];
+            let nightSufix: string = '';
+            if (hours >= 21 || hours <= 7) {
+              nightSufix = '-night';
+            }
+            if (post.cloudcover[index] >= 25) {
+              cloud_int = 1;
+
+            }
+            if (post.cloudcover[index] >= 60) {
+              cloud_int = 2;
+
+            }
+            if (post.rain[index] > 0) {
+              rain_bool = true;
+            }
+            if (post.snowfall[index] > 0) {
+              snow_bool = true;
+            }
+            switch (true) {
+              case (rain_bool):
+                switch (true) {
+                  case (cloud_int == 2):
+                    icoSt = 'background-image: url(/assets/rain.png)';
+                    break;
+                  default:
+                    icoSt = `background-image: url(/assets/clear-rain${nightSufix}.png)`;
+                    break;
+                }
+                break;
+              case (snow_bool):
+                switch (true) {
+                  case (cloud_int == 2):
+                    icoSt = 'background-image: url(/assets/snow.png)';
+                    break;
+                  default:
+                    icoSt = `background-image: url(/assets/clear-snow${nightSufix}.png)`;
+                    break;
+                }
+                break;
+              case (cloud_int == 2):
+                icoSt = 'background-image: url(/assets/cloud.png)';
+                break;
+              case (cloud_int == 1):
+                icoSt = `background-image: url(/assets/clear-cloud${nightSufix}.png)`;
+                break;
+              default:
+                icoSt = `background-image: url(/assets/clear${nightSufix}.png); background-size: 80%;`;
+                break
+            }
+
+            this.table_array_class[index_th] = { temp: post.temperature_2m[index], rain: post.precipitation[index], cloud: post.cloudcover[index], windDir: indWindDir[0], windDirStyle: indWindDir[1], windSpeed: post.windspeed_10m[index], iconStyle: icoSt };
+
+            index_th++
+          }
+
+          index++;
+        }
+
+        index = 0;
+        for (let item of post.temperature_2m) {
+          data_array[index].push(item);
+          index++;
+        }
+
+        index = 0;
+        for (let item of post.relativehumidity_2m) {
+          let limit = humidity_values.length;
+          if (index == limit) {
+            break;
+          } else {
+            humidity_values[index].push(item);
+          }
+          index++;
+        }
+
+        index = 0;
+        for (let item of post.surface_pressure) {
+          let limit = humidity_values.length;
+          if (index == limit) {
+            break;
+          } else {
+            pressure_values[index].push(Math.round(item / 1.333));
+          }
+          index++;
+        }
+        index = 0;
+        for (let item of post.windspeed_10m) {
+          let limit = humidity_values.length;
+          if (index == limit) {
+            break;
+          } else {
+            wind_values[index].push(item);
+          }
+          index++;
+        }
+        index = 0;
+        for (let item of post.winddirection_10m) {
+          let limit = humidity_values.length;
+          if (index == limit) {
+            break;
+          } else {
+            wind_direction_value[index].push(item);
+          }
+          index++;
+        }
+        let t_unit_string = '';
+        if (t_unit) {
+          t_unit_string = " °F";
+
         } else {
-          wind_values[index].push(item);
+          t_unit_string = " °C";
         }
-        index++;
-      }
-      index = 0;
-      for (let item of post.winddirection_10m) {
-        let limit = humidity_values.length;
-        if (index == limit) {
-          break;
-        } else {
-          wind_direction_value[index].push(item);
-        }
-        index++;
-      }
-      let t_unit_string = '';
-      if (t_unit) {
-        t_unit_string = " °F";
+        this.chartOptions.yAxis.title.text = `Temperature${t_unit_string}`;
+        this.chartOptions.tooltip.valueSuffix = t_unit_string
 
-      } else {
-        t_unit_string = " °C";
-      }
-      this.chartOptions.yAxis.title.text = `Temperature${t_unit_string}`;
-      this.chartOptions.tooltip.valueSuffix = t_unit_string
+        this.chartOptions.xAxis.plotLines[0].value = now;
+        this.chartOptions.series[0].data = data_array;
+        this.chartOptions.series[0].name = country;
+        this.chartOptions.title.text = title;
+        this.chartOptions.annotations = [{
+          labelOptions: {
+            backgroundColor: 'rgba(255,255,255,0.5)',
+            verticalAlign: 'top',
+            x: 120
+          },
+          labels: [{
+            point: { xAxis: 0, yAxis: 0, x: now, y: temperature_current },
+            text: `Local time: ${new Date(now).toUTCString()} <br/> Temperature: ${temperature_current}${t_unit_string}`
+          }]
+        }];
 
-      this.chartOptions.xAxis.plotLines[0].value = now;
-      this.chartOptions.series[0].data = data_array;
-      this.chartOptions.series[0].name = country;
-      this.chartOptions.title.text = title;
-      this.chartOptions.annotations = [{
-        labelOptions: {
-          backgroundColor: 'rgba(255,255,255,0.5)',
-          verticalAlign: 'top',
-          x: 120
-        },
-        labels: [{
-          point: { xAxis: 0, yAxis: 0, x: now, y: temperature_current },
-          text: `Local time: ${new Date(now).toUTCString()} <br/> Temperature: ${temperature_current}${t_unit_string}`
-        }]
-      }];
+        this.humidity_chartOptions_area.xAxis.plotLines[0].value = now;
+        this.humidity_chartOptions_area.series[0].data = humidity_values;
+        this.humidity_chartOptions_area.annotations = [{
+          labelOptions: {
+            backgroundColor: 'rgba(255,255,255,0.5)',
+            verticalAlign: 'top',
+            x: 50,
+            y: -12
+          },
+          labels: [{
+            point: { xAxis: 0, yAxis: 0, x: now, y: humidity_current },
+            text: `Humidity: ${humidity_current} %`
+          }]
+        }];
 
-      this.humidity_chartOptions_area.xAxis.plotLines[0].value = now;
-      this.humidity_chartOptions_area.series[0].data = humidity_values;
-      this.humidity_chartOptions_area.annotations = [{
-        labelOptions: {
-          backgroundColor: 'rgba(255,255,255,0.5)',
-          verticalAlign: 'top',
-          x: 50,
-          y: -12
-        },
-        labels: [{
-          point: { xAxis: 0, yAxis: 0, x: now, y: humidity_current },
-          text: `Humidity: ${humidity_current} %`
-        }]
-      }];
+        this.pressure_chartOptions_area.xAxis.plotLines[0].value = now;
+        this.pressure_chartOptions_area.series[0].data = pressure_values;
+        this.pressure_chartOptions_area.annotations = [{
+          labelOptions: {
+            backgroundColor: 'rgba(255,255,255,0.5)',
+            verticalAlign: 'top',
+            x: 65,
+            y: -12
+          },
+          labels: [{
+            point: { xAxis: 0, yAxis: 0, x: now, y: pressure_curent },
+            text: `Pressure: ${pressure_curent} mm Hg`
+          }]
+        }];
+        this.wind_chartOptions_area.xAxis.plotLines[0].value = now;
+        this.wind_chartOptions_area.series[0].data = wind_values;
+        this.wind_chartOptions_gauge.series[0].data = [wind_current_direction];
+        this.wind_chartOptions_gauge.series[1].data = [wind_current_speed];
+        this.wind_chartOptions_area.annotations = [{
+          labelOptions: {
+            backgroundColor: 'rgba(255,255,255,0.5)',
+            verticalAlign: 'top',
+            x: 55,
+            y: -20
+          },
+          labels: [{
+            point: { xAxis: 0, yAxis: 0, x: now, y: wind_current_speed },
+            text: `Speed: ${wind_current_speed} m/s <br/> Direction ${wind_current_direction} °`
+          }]
+        }];
 
-      this.pressure_chartOptions_area.xAxis.plotLines[0].value = now;
-      this.pressure_chartOptions_area.series[0].data = pressure_values;
-      this.pressure_chartOptions_area.annotations = [{
-        labelOptions: {
-          backgroundColor: 'rgba(255,255,255,0.5)',
-          verticalAlign: 'top',
-          x: 65,
-          y: -12
-        },
-        labels: [{
-          point: { xAxis: 0, yAxis: 0, x: now, y: pressure_curent },
-          text: `Pressure: ${pressure_curent} mm Hg`
-        }]
-      }];
-      this.wind_chartOptions_area.xAxis.plotLines[0].value = now;
-      this.wind_chartOptions_area.series[0].data = wind_values;
-      this.wind_chartOptions_gauge.series[0].data = [wind_current_direction];
-      this.wind_chartOptions_gauge.series[1].data = [wind_current_speed];
-      this.wind_chartOptions_area.annotations = [{
-        labelOptions: {
-          backgroundColor: 'rgba(255,255,255,0.5)',
-          verticalAlign: 'top',
-          x: 55,
-          y: -20
-        },
-        labels: [{
-          point: { xAxis: 0, yAxis: 0, x: now, y: wind_current_speed },
-          text: `Speed: ${wind_current_speed} m/s <br/> Direction ${wind_current_direction} °`
-        }]
-      }];
+        this.humidity_chart_gauge = Highcharts.chart('container-humidity-chart', this.humidity_chartOptions_area);
+        this.pressure_chart_area = Highcharts.chart('container-pressure-chart', this.pressure_chartOptions_area);
+        this.wind_chart_area = Highcharts.chart('container-wind-chart', this.wind_chartOptions_area);
+        this.highcharts = Highcharts.chart('container-chart', this.chartOptions);
+        let viewportOffset = document.body.getElementsByClassName('container-panel')[0].getBoundingClientRect();
+        this.check_type(this.selectedType);
+        window.scrollBy({
+          left: 0,
+          top: viewportOffset.top,
+          behavior: 'smooth'
+        });
+      }),
+      error: (err) => {
+        console.log(err);
 
-      this.humidity_chart_gauge = Highcharts.chart('container-humidity-chart', this.humidity_chartOptions_area);
-      this.pressure_chart_area = Highcharts.chart('container-pressure-chart', this.pressure_chartOptions_area);
-      this.wind_chart_area = Highcharts.chart('container-wind-chart', this.wind_chartOptions_area);
-      this.highcharts = Highcharts.chart('container-chart', this.chartOptions);
-      let viewportOffset = document.body.getElementsByClassName('container-panel')[0].getBoundingClientRect();
-      this.check_type(this.selectedType);
-      window.scrollBy({
-        left: 0,
-        top: viewportOffset.top,
-        behavior: 'smooth'
-      });
-    },
-      error => {
         this._snackBar.open('Sorry, no data', 'Ok');
       }
-    );
+    });
   }
 
   calc_wind_dir(dir: number) {
