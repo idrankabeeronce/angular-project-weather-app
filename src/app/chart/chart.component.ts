@@ -761,31 +761,31 @@ export class Chart implements OnInit, HighchartsChartModule {
               case (rain_bool):
                 switch (true) {
                   case (cloud_int == 2):
-                    icoSt = 'background-image: url(/assets/rain.png)';
+                    icoSt = 'background-image: url(assets/rain.png)';
                     break;
                   default:
-                    icoSt = `background-image: url(/assets/clear-rain${nightSufix}.png)`;
+                    icoSt = `background-image: url(assets/clear-rain${nightSufix}.png)`;
                     break;
                 }
                 break;
               case (snow_bool):
                 switch (true) {
                   case (cloud_int == 2):
-                    icoSt = 'background-image: url(/assets/snow.png)';
+                    icoSt = 'background-image: url(assets/snow.png)';
                     break;
                   default:
-                    icoSt = `background-image: url(/assets/clear-snow${nightSufix}.png)`;
+                    icoSt = `background-image: url(assets/clear-snow${nightSufix}.png)`;
                     break;
                 }
                 break;
               case (cloud_int == 2):
-                icoSt = 'background-image: url(/assets/cloud.png)';
+                icoSt = 'background-image: url(assets/cloud.png)';
                 break;
               case (cloud_int == 1):
-                icoSt = `background-image: url(/assets/clear-cloud${nightSufix}.png)`;
+                icoSt = `background-image: url(assets/clear-cloud${nightSufix}.png)`;
                 break;
               default:
-                icoSt = `background-image: url(/assets/clear${nightSufix}.png); background-size: 80%;`;
+                icoSt = `background-image: url(assets/clear${nightSufix}.png); background-size: 80%;`;
                 break
             }
 
