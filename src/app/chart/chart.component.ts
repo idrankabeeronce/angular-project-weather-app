@@ -609,6 +609,7 @@ export class Chart implements OnInit, HighchartsChartModule {
       this.get_forecast(this.RouteLat, this.RouteLon, '', this.selected_unit_celsius)
     } else {
       this.style_hourly_weather = { 'display': 'none' };
+
       this.getUpToData(country_code, country_name, this.selected_unit_celsius);
     }
   }
