@@ -1,3 +1,4 @@
+<!--
 <div class="map-user-menu">
     <div class="coords-view">
         <a routerLink="/" class="world-link"><img routerLink=""
@@ -78,5 +79,25 @@
     </div>
     <div class="charts-container">
         <router-outlet></router-outlet>
+    </div>
+</div>
+-->
+<link href="http://api.mapbox.com/mapbox-gl-js/v2.9.2/mapbox-gl.css" rel="stylesheet">
+<div @map id="map" class="map-container"></div>
+<div>
+    <div [ngStyle]="chartsStyle" class="details-container">
+
+        <div class="control-panel">
+            <h2>Location</h2>
+            <div id="buttons-panel">
+                <button routerLink="/weather-forecast" routerLinkActive="active" ariaCurrentWhenActive="page"
+                    id="route-button" mat-flat-button type='button' mat-button></button>
+                <button id="close-charts" mat-button type="button" mat-flat-button (click)="changeRoute()">
+                </button>
+            </div>
+        </div>
+        <div class="charts-container">
+            <router-outlet></router-outlet>
+        </div>
     </div>
 </div>

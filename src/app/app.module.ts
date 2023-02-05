@@ -27,7 +27,6 @@ import { ChartSettingsComponent } from './chart/chart-settings/chart-settings.co
 import { ChartsPageComponent } from './charts-page/charts-page.component';
 
 @NgModule({
-
   declarations: [
     AppComponent,
     Chart,
