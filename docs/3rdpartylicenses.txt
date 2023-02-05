@@ -72,6 +72,9 @@ https://www.highcharts.com/license
 highcharts-angular
 SEE LICENSE IN <LICENSE>
 
+mapbox-gl
+SEE LICENSE IN LICENSE.txt
+
 rxjs
 Apache-2.0
                                Apache License
